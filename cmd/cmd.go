@@ -2,12 +2,17 @@ package cmd
 
 import (
 	"fmt"
+	"os"
+	"syscall"
+
+	"github.com/iamwwc/wwcdocker/container"
 
 	"github.com/urfave/cli"
 )
 
-var runCommand = cli.Command{
-	Name:  "Run",
+// wwcdocker -ti ubuntu bash
+var RunCommand = cli.Command{
+	Name:  "run",
 	Usage: "create a new container from given image",
 	Action: func(ctx *cli.Context) error {
 		if len(ctx.Args()) < 1 {
@@ -18,12 +23,21 @@ var runCommand = cli.Command{
 		for _, arg := range ctx.Args() {
 			cmdArray = append(cmdArray, arg)
 		}
-
+		
 		enableTTY := ctx.Bool("ti")
 		detachContainer := ctx.Bool("d")
-		if(enableTTY && detachContainer){
+		if enableTTY && detachContainer {
 			return fmt.Errorf("ti and d args cannot both provided")
 		}
+
+		envs := ctx.StringSlice("env")
+		info := &container.ContainerInfo {
+			EnableTTY: enableTTY,
+			Detach: detachContainer,
+			Env: append(os.Environ(),envs...),
+		}
+		process, writePipe := container.GetContainerProcess(info)
+		
 	},
 	Flags: []cli.Flag{
 		cli.BoolFlag{
@@ -42,5 +56,18 @@ var runCommand = cli.Command{
 			Name:  "name",
 			Usage: "container name",
 		},
+		cli.StringSliceFlag{
+			Name: "env",
+			Usage: "environment variables",
+		},
+	},
+}
+
+var InitCommand = cli.Command{
+	Name:  "__DON'T__CALLED__wwcdocker__init__",
+	Usage: "Used In Container, User are forbidden to call this command",
+	Action: func(ctx *cli.Context) {
+		initCmd := ctx.Args()
+		syscall.Exec(initCmd)
 	},
 }

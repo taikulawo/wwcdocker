@@ -1,4 +1,4 @@
-module wwcdocker
+module github.com/iamwwc/wwcdocker
 
 go 1.12
 
