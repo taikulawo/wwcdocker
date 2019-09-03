@@ -2,12 +2,13 @@ package subsystems
 
 
 var (
-	Subsystems = []Subsystem {
-		&CPUSubsystem{},
+	Subsystems = []subsystem {
+		&cpuSubsystem{},
+		&memorySubsystem{},
 	}
 )
 
-type Subsystem interface{
+type subsystem interface{
 	// Name returns name of cgroup
 	Name() string
 	// Set sets resource limits

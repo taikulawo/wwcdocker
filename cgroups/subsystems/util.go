@@ -3,18 +3,32 @@ package subsystems
 import (
 	"bufio"
 	"fmt"
+	"io/ioutil"
 	"os"
 	"path"
+	"regexp"
+	"strconv"
 	"strings"
 )
+const (
+	subSystem = "/(\\w+?)/wwcdocker/"
+)
+func createCgroup(cpath string, pid int) error {
+	if err := os.MkdirAll(cpath, 0644); err != nil {
+		return fmt.Errorf("Failed to create cgroup %s, error: %v", cpath, err)
+	}
+	file := path.Base(cpath)
+	r := regexp.MustCompile(subSystem)
+	subSystemName := r.FindString(cpath)
+	if err := ioutil.WriteFile(path.Join(cpath, "tasks"), []byte(strconv.Itoa(pid)), 0644); err != nil {
+		return fmt.Errorf("Failed to add %s to cgroup %s",file, subSystemName)
+	}
+	return nil
+}
 
 func GetCgroupPath(subSysName string, containerId string) (string, error) {
 	cgroupDir := FindCgroupMountPoint(subSysName)
-	containerPath := path.Join(cgroupDir, "wwcdocker", containerId)
-	if err := os.MkdirAll(containerPath, 0644); err != nil {
-		return "", fmt.Errorf("Fail to create cgroup %s, error: %v", containerPath, err)
-	}
-	return containerPath, nil
+	return path.Join(cgroupDir, "wwcdocker", containerId), nil
 }
 
 func FindCgroupMountPoint(subsystem string) string {
