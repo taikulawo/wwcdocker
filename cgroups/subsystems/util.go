@@ -2,11 +2,21 @@ package subsystems
 
 import (
 	"bufio"
+	"fmt"
 	"os"
+	"path"
 	"strings"
 )
 
-// Find Cgroup path according to sub system type
+func GetCgroupPath(subSysName string, containerId string) (string, error) {
+	cgroupDir := FindCgroupMountPoint(subSysName)
+	containerPath := path.Join(cgroupDir, "wwcdocker", containerId)
+	if err := os.MkdirAll(containerPath, 0644); err != nil {
+		return "", fmt.Errorf("Fail to create cgroup %s, error: %v", containerPath, err)
+	}
+	return containerPath, nil
+}
+
 func FindCgroupMountPoint(subsystem string) string {
 	file, err := os.Open("/proc/self/mountinfo")
 	if err != nil {
@@ -14,8 +24,8 @@ func FindCgroupMountPoint(subsystem string) string {
 	}
 	defer file.Close()
 	scanner := bufio.NewScanner(file)
-	
-	// 41 32 0:36 / /sys/fs/cgroup/memory rw,nosuid,nodev,noexec,relatime shared:19 - cgroup cgroup rw,memory
+
+	// / /sys/fs/cgroup/memory rw,nosuid,nodev,noexec,relatime shared:19 - cgroup cgroup rw,memory
 	for scanner.Scan() {
 		text := scanner.Text()
 		fields := strings.Split(text, " ")
@@ -25,7 +35,7 @@ func FindCgroupMountPoint(subsystem string) string {
 			}
 		}
 	}
-	if err := scanner.Err(); err != nil{
+	if err := scanner.Err(); err != nil {
 		return ""
 	}
 	return ""

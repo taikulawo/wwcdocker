@@ -17,15 +17,8 @@ func main() {
 	app.Before = func(ctx *cli.Context) error {
 		log.SetFormatter(&log.JSONFormatter{})
 		log.SetOutput(os.Stdout)
+		return nil
 	}
-
-	fds := common.GetAllFdsOfProcess("/proc/self/fd")
-	if len(fds) > 3 {
-		// In Container
-		// syscall.Exec, current process will be overrided by init process
-		InitContainer()
-	}
-
 	if err := app.Run(os.Args); err != nil {
 		fmt.Fprintln(os.Stdout, err)
 

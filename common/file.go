@@ -7,7 +7,7 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-// GetAllFdOfProcess return all file descriptor of process
+// GetAllFdsOfProcess return all file descriptor of process
 func GetAllFdsOfProcess(path string) (fds []int) {
 	result, err := ioutil.ReadDir(path)
 	if err != nil {

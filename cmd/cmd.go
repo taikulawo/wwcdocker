@@ -3,8 +3,10 @@ package cmd
 import (
 	"fmt"
 	"os"
+	"strings"
 	"syscall"
 
+	"github.com/iamwwc/wwcdocker/common"
 	"github.com/iamwwc/wwcdocker/container"
 
 	"github.com/urfave/cli"
@@ -23,21 +25,30 @@ var RunCommand = cli.Command{
 		for _, arg := range ctx.Args() {
 			cmdArray = append(cmdArray, arg)
 		}
-		
+
 		enableTTY := ctx.Bool("ti")
 		detachContainer := ctx.Bool("d")
 		if enableTTY && detachContainer {
 			return fmt.Errorf("ti and d args cannot both provided")
 		}
 
+		name := ctx.String("name")
 		envs := ctx.StringSlice("env")
-		info := &container.ContainerInfo {
-			EnableTTY: enableTTY,
-			Detach: detachContainer,
-			Env: append(os.Environ(),envs...),
+		id := string(common.GetRandomNumber(16))
+		volumepoints := make(map[string]string)
+		for _, point := range ctx.StringSlice("v") {
+			p := strings.Split(point, ":")
+			volumepoints[p[0]] = p[1]
 		}
-		process, writePipe := container.GetContainerProcess(info)
-		
+		info := &container.ContainerInfo{
+			Name:        name,
+			Id:          id,
+			EnableTTY:   enableTTY,
+			Detach:      detachContainer,
+			Env:         append(os.Environ(), envs...),
+			VolumePoints: volumepoints,
+		}
+		return container.Run(info)
 	},
 	Flags: []cli.Flag{
 		cli.BoolFlag{
@@ -57,8 +68,12 @@ var RunCommand = cli.Command{
 			Usage: "container name",
 		},
 		cli.StringSliceFlag{
-			Name: "env",
+			Name:  "env",
 			Usage: "environment variables",
+		},
+		cli.StringSliceFlag{
+			Name:  "v",
+			Usage: "mount volume",
 		},
 	},
 }
