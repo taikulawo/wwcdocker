@@ -5,7 +5,6 @@ import (
 	"os"
 
 	"github.com/iamwwc/wwcdocker/cmd"
-	"github.com/iamwwc/wwcdocker/common"
 	log "github.com/sirupsen/logrus"
 	"github.com/urfave/cli"
 )

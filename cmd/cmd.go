@@ -3,6 +3,7 @@ package cmd
 import (
 	"fmt"
 	"os"
+	"os/exec"
 	"strings"
 	"syscall"
 
@@ -22,6 +23,9 @@ var RunCommand = cli.Command{
 		}
 
 		var cmdArray []string
+		// cmdArray[0] is image name
+		// ubuntu bash
+		// 0				1
 		for _, arg := range ctx.Args() {
 			cmdArray = append(cmdArray, arg)
 		}
@@ -41,12 +45,13 @@ var RunCommand = cli.Command{
 			volumepoints[p[0]] = p[1]
 		}
 		info := &container.ContainerInfo{
-			Name:        name,
-			Id:          id,
-			EnableTTY:   enableTTY,
-			Detach:      detachContainer,
-			Env:         append(os.Environ(), envs...),
+			Name:         name,
+			ID:           id,
+			EnableTTY:    enableTTY,
+			Detach:       detachContainer,
+			Env:          append(os.Environ(), envs...),
 			VolumePoints: volumepoints,
+			InitCmd:      cmdArray[1:],
 		}
 		return container.Run(info)
 	},
@@ -79,10 +84,27 @@ var RunCommand = cli.Command{
 }
 
 var InitCommand = cli.Command{
-	Name:  "__DON'T__CALLED__wwcdocker__init__",
-	Usage: "Used In Container, User are forbidden to call this command",
-	Action: func(ctx *cli.Context) {
-		initCmd := ctx.Args()
-		syscall.Exec(initCmd)
+	Name:  "__DON'T__CALL__wwcdocker__init__",
+	Usage: "Used in Container, User are forbidden to call this command",
+	Action: func(ctx *cli.Context) error {
+		b, err := common.ReadFromFd(4)
+		if err != nil {
+			return err
+		}
+		defaultMountFlags := syscall.MS_NOEXEC | syscall.MS_NODEV | syscall.MS_NOSUID
+		if err := syscall.Mount("proc", "/proc", "proc", uintptr(defaultMountFlags), ""); err != nil {
+			return fmt.Errorf("Fail to mount /proc fs in container process. Error: %v", err)
+		}
+
+		cmdArrays := strings.Split(b," ")
+		absolutePath , err := exec.LookPath(cmdArrays[0])
+		if err != nil {
+			return fmt.Errorf("Fail to Lookup path %s. Error: %v",cmdArrays[0],err)
+		}
+		// env 在 容器里已经注入过了，这里 Environ 包含着 user 注入进来的 env
+		if err := syscall.Exec(absolutePath, cmdArrays[1:], os.Environ()); err != nil {
+			return fmt.Errorf("Fail to Exec process in container. Error: %v",err)
+		}
+		return nil
 	},
 }

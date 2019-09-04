@@ -5,17 +5,19 @@ import (
 	"os"
 	"os/exec"
 	"path"
+	"strings"
 	"syscall"
 
-	c "github.com/iamwwc/wwcdocker/cmd"
 	log "github.com/sirupsen/logrus"
 )
 
 // Run start container run
-func Run(info *ContainerInfo) error{
+func Run(info *ContainerInfo) error {
 	process, writePipe := GetContainerProcess(info)
 	ExecProcess(process, info)
-	recordContainerInfo(info)
+	defer writePipe.Close()
+	writePipe.WriteString(strings.Join(info.InitCmd, " "))
+	return recordContainerInfo(info)
 }
 
 // GetContainerProcess returns cmd and writePipe.
@@ -28,7 +30,7 @@ func GetContainerProcess(info *ContainerInfo) (*exec.Cmd, *os.File) {
 
 	initCmd, err := os.Readlink("/proc/self/exe")
 
-	cmd := exec.Command(initCmd, c.InitCommand.Name)
+	cmd := exec.Command(initCmd, "__DON'T__CALL__wwcdocker__init__")
 	cmd.SysProcAttr = &syscall.SysProcAttr{
 		Cloneflags: syscall.CLONE_NEWUTS |
 			syscall.CLONE_NEWIPC |
@@ -43,15 +45,15 @@ func GetContainerProcess(info *ContainerInfo) (*exec.Cmd, *os.File) {
 		cmd.Stdout = os.Stdout
 		cmd.Stderr = os.Stderr
 	} else {
-		logDir := path.Join(DefaultContainerLogLocation, info.Id)
+		logDir := path.Join(DefaultContainerLogLocation, info.ID)
 		// x 1
 		// w 2
 		// r 4
 		if err := os.MkdirAll(logDir, 0622); err != nil {
-			log.Errorf("Failed to create container %s Log folder, cause: [%s]", info.Id, err)
+			log.Errorf("Failed to create container %s Log folder, cause: [%s]", info.ID, err)
 			return nil, nil
 		}
-		logFilePath := path.Join(logDir, info.Id)
+		logFilePath := path.Join(logDir, info.ID)
 		logFile, err := os.Create(logFilePath)
 		if err != nil {
 			log.Error(err)
@@ -75,7 +77,7 @@ func NewFilePipe() (*os.File, *os.File, error) {
 }
 
 func pivotRoot(rootfs string) error {
-	if err := syscall.Mount(rootfs, rootfs, "bind", syscall.MS_BIND|syscall.MS_REC); err != nil {
+	if err := syscall.Mount(rootfs, rootfs, "bind", syscall.MS_BIND|syscall.MS_REC, ""); err != nil {
 		log.Errorf("Mount %s to itself error, %v", rootfs, err)
 		return err
 	}
@@ -95,9 +97,9 @@ func pivotRoot(rootfs string) error {
 		return fmt.Errorf("chdir error %v", err)
 	}
 
-	old := path.Join("/",".pivotroot")
-	if err :=	syscall.Unmount(old, syscall.MNT_DETACH); err != nil {
-		return fmt.Errorf("Unmount failed %v",err)
+	old := path.Join("/", ".pivotroot")
+	if err := syscall.Unmount(old, syscall.MNT_DETACH); err != nil {
+		return fmt.Errorf("Unmount failed %v", err)
 	}
 	return os.Remove(old)
 }
