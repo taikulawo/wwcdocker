@@ -22,6 +22,17 @@ func RemoveFromCgroup(id string) error {
 	return nil
 }
 
+func CreateAndSetLimit(id string, pid int, config *sub.ResourceConfig) error {
+	if err := CreateCgroup(id, pid); err != nil {
+		return err
+	}
+
+	if err := SetResourceLimit(id,config); err != nil {
+		return err
+	}
+	return nil
+}
+
 func SetResourceLimit(id string, config *sub.ResourceConfig) error {
 	for _, sub := range sub.Subsystems {
 		if err := sub.SetLimit(id, config); err != nil {

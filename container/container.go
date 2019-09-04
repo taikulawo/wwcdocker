@@ -24,7 +24,7 @@ type ContainerInfo struct {
 	VolumePoints  map[string]string  `json:"volumePoints"`
 	InitCmd       []string           `json:"initCmd"`
 	CreateTime    string             `json:"createTime"`
-	ResourceLimit sub.ResourceConfig `json:"resourceLimit"`
+	ResourceLimit *sub.ResourceConfig `json:"resourceLimit"`
 	EnableTTY     bool               `json:"enableTty"`
 	Detach        bool               `json:"detach"`
 	FilePath      map[string]string  `json:"filePath"`

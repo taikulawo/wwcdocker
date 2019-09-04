@@ -20,7 +20,6 @@ func main() {
 	}
 	if err := app.Run(os.Args); err != nil {
 		fmt.Fprintln(os.Stdout, err)
-
 	}
 }
 

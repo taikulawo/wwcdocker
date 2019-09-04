@@ -7,6 +7,8 @@ import (
 	"os/exec"
 	"path"
 	"time"
+
+	"github.com/iamwwc/wwcdocker/cgroups"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -17,8 +19,10 @@ func ExecProcess(process *exec.Cmd, info *ContainerInfo) error {
 	if err := process.Start(); err != nil {
 		return fmt.Errorf("Failed to Start Process, %v", err)
 	}
-	info.Pid = process.Process.Pid
-	return nil
+	pid := process.Process.Pid
+	info.Pid = pid
+
+	return cgroups.CreateAndSetLimit(info.ID, pid, info.ResourceLimit)
 }
 
 func recordContainerInfo(info *ContainerInfo) error {
@@ -43,6 +47,6 @@ func recordContainerInfo(info *ContainerInfo) error {
 	if err != nil {
 		return err
 	}
-	log.Debugf("%d characters has been written to %s", n, path.Join(DefaultContainerInfoDir,name))
+	log.Debugf("%d characters has been written to %s", n, path.Join(DefaultContainerInfoDir, name))
 	return nil
 }

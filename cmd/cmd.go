@@ -29,7 +29,7 @@ var RunCommand = cli.Command{
 		for _, arg := range ctx.Args() {
 			cmdArray = append(cmdArray, arg)
 		}
-
+		imageName := cmdArray[0]
 		enableTTY := ctx.Bool("ti")
 		detachContainer := ctx.Bool("d")
 		if enableTTY && detachContainer {
@@ -52,6 +52,7 @@ var RunCommand = cli.Command{
 			Env:          append(os.Environ(), envs...),
 			VolumePoints: volumepoints,
 			InitCmd:      cmdArray[1:],
+			ImageName: imageName,
 		}
 		return container.Run(info)
 	},
