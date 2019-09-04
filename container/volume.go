@@ -7,7 +7,6 @@ import (
 	"path"
 	"syscall"
 
-	"github.com/iamwwc/wwcdocker/common"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -29,39 +28,28 @@ func MountVolume(parentPath, containerPath, id string) error {
 		return fmt.Errorf("Failed to create volume in container. Error: %v", err)
 	}
 	dirs := "dirs=" + parentPath
-	if err := syscall.Mount(parentPath, containerPath, "aufs",0,dirs); err != nil {
+	if err := syscall.Mount(parentPath, containerPath, "aufs", 0, dirs); err != nil {
 		return err
 	}
 	return nil
 }
 
-// NewWorkSpace create new container working directory
-func NewWorkSpace(info *ContainerInfo) string {
-	containerName := info.ID
-	wlayerPath := path.Join(ContainerWriteLayerRoot, containerName)
-	rlayerPath := path.Join(ContainerReadLayerRoot, containerName)
-	info.FilePath["readLayerPath"] = rlayerPath
-	info.FilePath["writeLayerPath"] = wlayerPath
-	if ok, err := common.NameExists(wlayerPath); ok {
-		log.Warnf("Found same container write layer exists in %s, Layer will be removed. Error: %s", wlayerPath, err)
-	}
-
-	if ok, err := common.NameExists(rlayerPath); ok {
-		log.Warnf("Found same container read layer exists in %s, Layer will be removed. Error: %s", rlayerPath, err)
-	}
+// NewWorkspace create new container working directory
+func NewWorkspace(root, containerID string, volumes map[string]string) string {
+	wlayerPath := path.Join(ContainerWriteLayerRoot, containerID)
+	rlayerPath := path.Join(ContainerReadLayerRoot, containerID)
 	createNewWriteLayer(wlayerPath)
-	createNewReadLayer(rlayerPath)
+	createNewReadLayer(rlayerPath,"")
 
-
-	mountpath := getCwdFromID(info.ID)
+	mountpath := getCwdFromID(containerID)
 	// 将 write layer 与 read layer 组合挂载成aufs文件系统
 	if err := createMountPoint(mountpath, wlayerPath, rlayerPath); err != nil {
 		log.Errorf("Fail to mount writelayer and read layer. Error: %v", err)
 	}
-	if len(info.VolumePoints) > 0 {
-		for k, v := range info.VolumePoints {
+	if len(volumes) > 0 {
+		for k, v := range volumes {
 			if k != "" && v != "" {
-				MountVolume(k, v, info.ID)
+				MountVolume(k, v, containerID)
 			}
 			continue
 			log.Errorf("Invalid mount path %s:%s", k, v)
@@ -79,8 +67,19 @@ func createNewWriteLayer(name string) error {
 }
 
 // createNewReadLayer create working folder from the given image.
-func createNewReadLayer(imageLayer string) {
+// root is container read layer folder
+// such as /var/lib/wwcdocker/readlayer/213kjassdqw/
+func createNewReadLayer(root, imageLayer string) error {
+	busyBoxTarURL := "/root/busybox.tar"
 
+	_, err := os.Stat(busyBoxTarURL)
+	if os.IsNotExist(err) {
+		return fmt.Errorf("busybox.tar don't exist in %s",busyBoxTarURL)
+	}
+	if _, err := exec.Command("tar","-xzf",busyBoxTarURL,"-C",root).CombinedOutput(); err != nil {
+		return fmt.Errorf("untar error. %v", err)
+	}
+	return nil
 }
 func createMountPoint(mountpath, wlayerpath, rlayerpath string) error {
 	// rlayerpath 就是 镜像的 只读文件夹 位置
@@ -89,4 +88,26 @@ func createMountPoint(mountpath, wlayerpath, rlayerpath string) error {
 		return err
 	}
 	return nil
+}
+
+// DeleteWorkSpace deletes write layer, unmounts mountpoint
+func DeleteWorkSpace(containerID string) {
+	deleteMountPoint(path.Join(ContainerMountRoot, containerID))
+	deleteWriteLayer(path.Join(ContainerWriteLayerRoot, containerID))
+}
+
+func deleteMountPoint(mntpoint string) error {
+	if err := syscall.Unmount(mntpoint,syscall.MNT_DETACH); err != nil {
+		return err
+	}
+	_, err := os.Stat(mntpoint)
+	if os.IsExist(err) {
+		return os.RemoveAll(mntpoint)
+	}
+	return nil
+}
+
+// deleteWriteLayer deletes container write layer located on writelayer folder
+func deleteWriteLayer(path string) error {
+	return os.RemoveAll(path)
 }

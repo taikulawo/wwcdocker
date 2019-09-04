@@ -45,14 +45,16 @@ var RunCommand = cli.Command{
 			volumepoints[p[0]] = p[1]
 		}
 		info := &container.ContainerInfo{
-			Name:         name,
-			ID:           id,
-			EnableTTY:    enableTTY,
-			Detach:       detachContainer,
-			Env:          append(os.Environ(), envs...),
-			VolumePoints: volumepoints,
-			InitCmd:      cmdArray[1:],
-			ImageName: imageName,
+			Name:          name,
+			ID:            id,
+			Rm:            ctx.Bool("rm"),
+			EnableTTY:     enableTTY,
+			Detach:        detachContainer,
+			Env:           append(os.Environ(), envs...),
+			VolumePoints:  volumepoints,
+			InitCmd:       cmdArray[1:],
+			ImageName:     imageName,
+			ResourceLimit: parseResourceLimitFromcli(ctx),
 		}
 		return container.Run(info)
 	},
@@ -69,6 +71,10 @@ var RunCommand = cli.Command{
 			Name:  "mem",
 			Usage: "memery limit (mb)",
 		},
+		cli.UintFlag{
+			Name:  "cpushares",
+			Usage: "cpu shares",
+		},
 		cli.StringFlag{
 			Name:  "name",
 			Usage: "container name",
@@ -77,6 +83,10 @@ var RunCommand = cli.Command{
 			Name:  "env",
 			Usage: "environment variables",
 		},
+		// cli.BoolFlag{
+		// 	Name: "rm",
+		// 	Usage: "Remove container after container stopped",
+		// }
 		cli.StringSliceFlag{
 			Name:  "v",
 			Usage: "mount volume",
@@ -97,14 +107,14 @@ var InitCommand = cli.Command{
 			return fmt.Errorf("Fail to mount /proc fs in container process. Error: %v", err)
 		}
 
-		cmdArrays := strings.Split(b," ")
-		absolutePath , err := exec.LookPath(cmdArrays[0])
+		cmdArrays := strings.Split(b, " ")
+		absolutePath, err := exec.LookPath(cmdArrays[0])
 		if err != nil {
-			return fmt.Errorf("Fail to Lookup path %s. Error: %v",cmdArrays[0],err)
+			return fmt.Errorf("Fail to Lookup path %s. Error: %v", cmdArrays[0], err)
 		}
 		// env 在 容器里已经注入过了，这里 Environ 包含着 user 注入进来的 env
 		if err := syscall.Exec(absolutePath, cmdArrays[1:], os.Environ()); err != nil {
-			return fmt.Errorf("Fail to Exec process in container. Error: %v",err)
+			return fmt.Errorf("Fail to Exec process in container. Error: %v", err)
 		}
 		return nil
 	},

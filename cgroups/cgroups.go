@@ -6,7 +6,7 @@ import (
 
 func CreateCgroup(id string, pid int) error {
 	for _, sub := range sub.Subsystems {
-		if err := sub.Apply(id,pid); err != nil {
+		if err := sub.Apply(id, pid); err != nil {
 			return err
 		}
 	}
@@ -27,7 +27,7 @@ func CreateAndSetLimit(id string, pid int, config *sub.ResourceConfig) error {
 		return err
 	}
 
-	if err := SetResourceLimit(id,config); err != nil {
+	if err := SetResourceLimit(id, config); err != nil {
 		return err
 	}
 	return nil
@@ -41,4 +41,3 @@ func SetResourceLimit(id string, config *sub.ResourceConfig) error {
 	}
 	return nil
 }
-

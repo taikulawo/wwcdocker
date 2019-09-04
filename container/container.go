@@ -1,35 +1,38 @@
 package container
 
 import (
-	"fmt"
+	"path"
 
 	sub "github.com/iamwwc/wwcdocker/cgroups/subsystems"
 )
 
 const (
-	ContainerMountRoot          = "/var/run/wwcdocker/mount/%s"
-	ContainerWriteLayerRoot     = "/var/run/wwcdocker/writelayer/%s"
-	ContainerReadLayerRoot      = "/var/run/wwcdocker/readlayer/%s"
-	DefaultContainerLogLocation = "/var/run/wwcdocker/log/%s"
-	DefaultContainerInfoDir     = "/var/run/wwcdocker/info/"
+	// WwcdockerRoot is container root
+	WwcdockerRoot               = "/var/lib/wwcdocker/"
+	ContainerMountRoot          = WwcdockerRoot + "mnt"
+	ContainerWriteLayerRoot     = WwcdockerRoot + "writelayers"
+	ContainerReadLayerRoot      = WwcdockerRoot + "readlayers"
+	DefaultContainerLogLocation = WwcdockerRoot + "log"
+	DefaultContainerInfoDir     = WwcdockerRoot + "info"
 )
 
 // ContainerInfo has all container information
 type ContainerInfo struct {
-	Name          string             `json:"name"`
-	ID            string             `json:"id"`
-	Pid           int                `json:"pid"`
-	ImageName     string             `json:"imageName"`
-	Env           []string           `json:"env"`
-	VolumePoints  map[string]string  `json:"volumePoints"`
-	InitCmd       []string           `json:"initCmd"`
-	CreateTime    string             `json:"createTime"`
+	Name          string              `json:"name"`
+	ID            string              `json:"id"`
+	Pid           int                 `json:"pid"`
+	ImageName     string              `json:"imageName"`
+	Rm            bool                `json:"rm"` // Remove container after container stopped
+	Env           []string            `json:"env"`
+	VolumePoints  map[string]string   `json:"volumePoints"`
+	InitCmd       []string            `json:"initCmd"`
+	CreateTime    string              `json:"createTime"`
 	ResourceLimit *sub.ResourceConfig `json:"resourceLimit"`
-	EnableTTY     bool               `json:"enableTty"`
-	Detach        bool               `json:"detach"`
-	FilePath      map[string]string  `json:"filePath"`
+	EnableTTY     bool                `json:"enableTty"`
+	Detach        bool                `json:"detach"`
+	FilePath      map[string]string   `json:"filePath"`
 }
 
-func getCwdFromID (id string) string {
-	return fmt.Sprintf(ContainerMountRoot, id)
+func getCwdFromID(id string) string {
+	return path.Join(ContainerMountRoot, id)
 }
