@@ -19,9 +19,9 @@ SSH挂载目录远程开发
 
 ### TODO
 
-1. [-] docker exec
-2. [-] docker ps
-3. [-] docker container stop
-4. [-] docker container rm
-5. [-] docker run --network
-6. [-] docker network create | rm
+- [ ] docker exec
+- [ ] docker ps
+- [ ] docker container stop
+- [ ] docker container rm
+- [ ] docker run --network
+- [ ] docker network create | rm
