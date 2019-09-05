@@ -9,21 +9,27 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
+
+	log "github.com/sirupsen/logrus"
 )
+
 const (
 	subSystem = "/([\\w|,]+?)/wwcdocker/"
 )
+
 func createCgroup(cpath string, pid int) error {
 	if err := os.MkdirAll(cpath, 0644); err != nil {
 		return fmt.Errorf("Failed to create cgroup %s, error: %v", cpath, err)
 	}
-	file := path.Base(cpath)
 	r := regexp.MustCompile(subSystem)
 	subSystemName := r.FindStringSubmatch(cpath)[1]
-	// 这个writefile会清空文件内容
-	if err := ioutil.WriteFile(path.Join(cpath, "tasks"), []byte(strconv.Itoa(pid)), 0644); err != nil {
-		return fmt.Errorf("Failed to add %s to cgroup %s",file, subSystemName)
+
+	taskpath := path.Join(cpath, "tasks")
+	if err := ioutil.WriteFile(taskpath,[]byte(strconv.Itoa(pid)),0644); err != nil {
+		log.Error(err)
+		return err
 	}
+	log.Debugf("Limit Resource in %s", subSystemName)
 	return nil
 }
 
@@ -55,5 +61,3 @@ func FindCgroupMountPoint(subsystem string) string {
 	}
 	return ""
 }
-
-

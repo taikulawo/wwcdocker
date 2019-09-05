@@ -71,7 +71,7 @@ var RunCommand = cli.Command{
 			Name:  "mem",
 			Usage: "memery limit (mb)",
 		},
-		cli.UintFlag{
+		cli.StringFlag{
 			Name:  "cpushares",
 			Usage: "cpu shares",
 		},

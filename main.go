@@ -14,7 +14,7 @@ func main() {
 	app.Name = "wwcdocker"
 	app.Commands = []cli.Command{cmd.RunCommand}
 	app.Before = func(ctx *cli.Context) error {
-		log.SetFormatter(&log.JSONFormatter{})
+		log.SetReportCaller(false)
 		log.SetOutput(os.Stdout)
 		return nil
 	}
