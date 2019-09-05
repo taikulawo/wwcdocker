@@ -7,8 +7,12 @@ env:
 script:
   - go build .
 
+before_deploy:
+  - git config --local user.name "${GIT_USER_NAME}"
+  - git config --local user.email "${GIT_USER_EMAIL}"
+
 deploy:
   provider: releases
-  api_key: "GITHUB OAUTH TOKEN"
+  api_key: $GITHUB_TOKEN
   file: "wwcdocker"
   skip_cleanup: true
