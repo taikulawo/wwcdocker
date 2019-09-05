@@ -23,6 +23,3 @@ func main() {
 	}
 }
 
-func InitContainer() {
-
-}

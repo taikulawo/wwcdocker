@@ -1,0 +1,14 @@
+language: go
+
+go:
+- 1.12
+env:
+  - GO111MODULE=on
+script:
+  - go build .
+
+deploy:
+  provider: releases
+  api_key: "GITHUB OAUTH TOKEN"
+  file: "wwcdocker"
+  skip_cleanup: true

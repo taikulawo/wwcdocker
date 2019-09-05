@@ -11,7 +11,7 @@ import (
 	"strings"
 )
 const (
-	subSystem = "/(\\w+?)/wwcdocker/"
+	subSystem = "/([\\w|,]+?)/wwcdocker/"
 )
 func createCgroup(cpath string, pid int) error {
 	if err := os.MkdirAll(cpath, 0644); err != nil {

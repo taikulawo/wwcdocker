@@ -51,15 +51,15 @@ func NewWorkspace(root, containerID string, volumes map[string]string) string {
 			if k != "" && v != "" {
 				MountVolume(k, v, containerID)
 			}
-			continue
 			log.Errorf("Invalid mount path %s:%s", k, v)
+			continue
 		}
 	}
 	return mountpath
 }
 
 func createNewWriteLayer(name string) error {
-	if err := os.Mkdir(name, 0777); err != nil {
+	if err := os.MkdirAll(name, 0777); err != nil {
 		log.Error(err)
 		return err
 	}
@@ -76,15 +76,21 @@ func createNewReadLayer(root, imageLayer string) error {
 	if os.IsNotExist(err) {
 		return fmt.Errorf("busybox.tar don't exist in %s",busyBoxTarURL)
 	}
-	if _, err := exec.Command("tar","-xzf",busyBoxTarURL,"-C",root).CombinedOutput(); err != nil {
+	if err := os.MkdirAll(root,0644); err != nil {
+		return err
+	}
+	if _, err := exec.Command("tar","-xvf",busyBoxTarURL,"-C",root).CombinedOutput(); err != nil {
 		return fmt.Errorf("untar error. %v", err)
 	}
 	return nil
 }
 func createMountPoint(mountpath, wlayerpath, rlayerpath string) error {
 	// rlayerpath 就是 镜像的 只读文件夹 位置
-	dirs := fmt.Sprintf("%s:%s", wlayerpath, rlayerpath)
-	if err := exec.Command("mount", "-t", "aufs", "-o", dirs, "none", mountpath).Start(); err != nil {
+	if err := os.MkdirAll(mountpath,0777); err != nil {
+		return err
+	}
+	dirs := fmt.Sprintf("dirs=%s:%s", wlayerpath, rlayerpath)
+	if err := exec.Command("mount", "-t", "aufs", "-o", dirs, "none", mountpath).Run(); err != nil {
 		return err
 	}
 	return nil

@@ -38,7 +38,7 @@ var RunCommand = cli.Command{
 
 		name := ctx.String("name")
 		envs := ctx.StringSlice("env")
-		id := string(common.GetRandomNumber(16))
+		id := common.GetRandomNumber()
 		volumepoints := make(map[string]string)
 		for _, point := range ctx.StringSlice("v") {
 			p := strings.Split(point, ":")
@@ -118,4 +118,5 @@ var InitCommand = cli.Command{
 		}
 		return nil
 	},
+	HideHelp: true,
 }

@@ -1,16 +1,19 @@
 package common
 
 import (
-	"crypto/rand"
 	"fmt"
 	"io/ioutil"
 	"os"
+	log "github.com/sirupsen/logrus"
+	"github.com/google/uuid"
 )
 
-func GetRandomNumber(l int) (b []byte) {
-	b = make([]byte, l, l)
-	rand.Read(b)
-	return
+func GetRandomNumber() string {
+	s, err := uuid.NewRandom()
+	if err != nil {
+		log.Warnf("UUID error. %v",err)
+	}
+	return s.String()
 }
 
 func NameExists(path string) (bool, error) {
