@@ -31,6 +31,9 @@ func (m *memorySubsystem) SetLimit(id string, config *ResourceConfig) error {
 		return err
 	}
 	limitInBytes := config.MemLimit
+	if limitInBytes == "" {
+		return nil
+	}
 	if err := ioutil.WriteFile(path.Join(cpath, "memory.limit_in_bytes"), []byte(limitInBytes),0644); err != nil {
 		return err
 	}

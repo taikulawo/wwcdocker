@@ -21,5 +21,6 @@ type subsystem interface{
 
 type ResourceConfig struct {
 	CPUSet string
+	CPUShares string
 	MemLimit string
 }

@@ -10,6 +10,7 @@
       "request": "launch",
       "mode": "auto",
       "program": "${workspaceFolder}",
+      // "preLaunchTask": "echo preLaunchTask",
       "env": {},
       "args": [
         "run",

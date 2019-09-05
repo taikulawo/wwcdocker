@@ -9,7 +9,7 @@ func parseResourceLimitFromcli(ctx *cli.Context) (config *subsystems.ResourceCon
 	memLimits := ctx.String("mem")
 	cpushares := ctx.String("cpushares")
 	return &subsystems.ResourceConfig{
-		CPUSet: cpushares,
+		CPUShares: cpushares,
 		MemLimit: memLimits,
 	}
 }

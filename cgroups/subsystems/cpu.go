@@ -14,7 +14,10 @@ func (c *cpuSubsystem) SetLimit(id string, config *ResourceConfig) error {
 	if err != nil {
 		return err
 	}
-	limit := config.CPUSet
+	limit := config.CPUShares
+	if limit == "" {
+		return nil
+	}
 	if err := ioutil.WriteFile(path.Join(cpath, "cpu.shares"), []byte(limit), 0644); err != nil {
 		return err
 	}

@@ -19,7 +19,8 @@ func createCgroup(cpath string, pid int) error {
 	}
 	file := path.Base(cpath)
 	r := regexp.MustCompile(subSystem)
-	subSystemName := r.FindString(cpath)
+	subSystemName := r.FindStringSubmatch(cpath)[1]
+	// 这个writefile会清空文件内容
 	if err := ioutil.WriteFile(path.Join(cpath, "tasks"), []byte(strconv.Itoa(pid)), 0644); err != nil {
 		return fmt.Errorf("Failed to add %s to cgroup %s",file, subSystemName)
 	}
