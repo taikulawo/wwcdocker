@@ -11,6 +11,11 @@ branches:
   only:
   - master
 
+notifications:
+  email:
+    on_success: never
+    on_failure: always
+
 before_deploy:
   - git config --local user.name "${GIT_USER_NAME}"
   - git config --local user.email "${GIT_USER_EMAIL}"
