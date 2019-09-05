@@ -1,5 +1,11 @@
 #!/bin/bash
 
+# Raw location
+# https://raw.githubusercontent.com/iamwwc/wwcdocker/master/install.sh
+
+# TO INSTALL this script, run following
+# bash <(curl -s https://raw.githubusercontent.com/iamwwc/wwcdocker/master/install.sh)
+
 red='\033[0;31m'
 plain='\033[0m'
 
