@@ -16,3 +16,5 @@ deploy:
   api_key: $GITHUB_TOKEN
   file: "wwcdocker"
   skip_cleanup: true
+  on:
+    tags: true
