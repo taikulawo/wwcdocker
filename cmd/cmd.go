@@ -9,7 +9,7 @@ import (
 
 	"github.com/iamwwc/wwcdocker/common"
 	"github.com/iamwwc/wwcdocker/container"
-
+	log "github.com/sirupsen/logrus"
 	"github.com/urfave/cli"
 )
 
@@ -98,8 +98,16 @@ var InitCommand = cli.Command{
 	Name:  "__DON'T__CALL__wwcdocker__init__",
 	Usage: "Used in Container, User are forbidden to call this command",
 	Action: func(ctx *cli.Context) error {
-		b, err := common.ReadFromFd(4)
+		log.Info("Init process started")
+		// 注入的 fd 是3，不是4...
+		// 就因为这个问题，相继引出了
+		// https://stackoverflow.com/questions/57806908/the-task-is-removed-from-cgroup-after-the-exit
+		// https://github.com/iamwwc/wwcdocker/issues/1
+		// 可算搞明白僵尸进程了
+		// 可算坑死我了 :(
+		b, err := common.ReadFromFd(3)
 		if err != nil {
+			log.Error(err)
 			return err
 		}
 		defaultMountFlags := syscall.MS_NOEXEC | syscall.MS_NODEV | syscall.MS_NOSUID
