@@ -15,8 +15,8 @@ import (
 func Run(info *ContainerInfo) error {
 	process, writePipe := GetContainerProcess(info)
 	ExecProcess(process, info)
-	defer writePipe.Close()
 	writePipe.WriteString(strings.Join(info.InitCmd, " "))
+	writePipe.Close()
 	err := recordContainerInfo(info)
 	if info.EnableTTY {
 		process.Wait()

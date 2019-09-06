@@ -5,7 +5,7 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Launch",
+      "name": "WWCDocker",
       "type": "go",
       "request": "launch",
       "mode": "auto",
@@ -15,7 +15,7 @@
       "args": [
         "run",
         "-ti",
-        "ubuntu",
+        "busybox",
         "bash"
       ],
       "useApiV1": false,

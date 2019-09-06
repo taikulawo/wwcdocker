@@ -106,6 +106,7 @@ var InitCommand = cli.Command{
 		// 可算搞明白僵尸进程了
 		// 可算坑死我了 :(
 		b, err := common.ReadFromFd(3)
+		log.Debugf("Read from parent process %s", b)
 		if err != nil {
 			log.Error(err)
 			return err
@@ -117,14 +118,17 @@ var InitCommand = cli.Command{
 
 		cmdArrays := strings.Split(b, " ")
 		absolutePath, err := exec.LookPath(cmdArrays[0])
+		args := cmdArrays[1:]
+		log.Debugf("Found exec binary %s with cmd args %s", absolutePath, args)
 		if err != nil {
 			return fmt.Errorf("Fail to Lookup path %s. Error: %v", cmdArrays[0], err)
 		}
 		// env 在 容器里已经注入过了，这里 Environ 包含着 user 注入进来的 env
-		if err := syscall.Exec(absolutePath, cmdArrays[1:], os.Environ()); err != nil {
+		if err := syscall.Exec(absolutePath, args, os.Environ()); err != nil {
 			return fmt.Errorf("Fail to Exec process in container. Error: %v", err)
 		}
 		return nil
 	},
+	Hidden: true,
 	HideHelp: true,
 }
