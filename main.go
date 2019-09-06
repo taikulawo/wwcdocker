@@ -19,6 +19,7 @@ func main() {
 	app.Before = func(ctx *cli.Context) error {
 		log.SetReportCaller(false)
 		log.SetOutput(os.Stdout)
+		// log.SetLevel(log.DebugLevel)
 		return nil
 	}
 	if err := app.Run(os.Args); err != nil {

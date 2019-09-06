@@ -13,7 +13,7 @@ import (
 	"github.com/urfave/cli"
 )
 
-// wwcdocker -ti ubuntu bash
+// wwcdocker -ti busybox bash
 var RunCommand = cli.Command{
 	Name:  "run",
 	Usage: "create a new container from given image",
@@ -106,7 +106,7 @@ var InitCommand = cli.Command{
 		// 可算搞明白僵尸进程了
 		// 可算坑死我了 :(
 		b, err := common.ReadFromFd(3)
-		log.Debugf("Read from parent process %s", b)
+		log.Infof("Read from parent process %s", b)
 		if err != nil {
 			log.Error(err)
 			return err
@@ -125,6 +125,7 @@ var InitCommand = cli.Command{
 		}
 		// env 在 容器里已经注入过了，这里 Environ 包含着 user 注入进来的 env
 		if err := syscall.Exec(absolutePath, args, os.Environ()); err != nil {
+			log.Error(err)
 			return fmt.Errorf("Fail to Exec process in container. Error: %v", err)
 		}
 		return nil

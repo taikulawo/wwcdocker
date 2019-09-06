@@ -90,7 +90,8 @@ func createMountPoint(mountpath, wlayerpath, rlayerpath string) error {
 		return err
 	}
 	dirs := fmt.Sprintf("dirs=%s:%s", wlayerpath, rlayerpath)
-	if err := exec.Command("mount", "-t", "aufs", "-o", dirs, "none", mountpath).Run(); err != nil {
+	if _, err := exec.Command("mount", "-t", "aufs", "-o", dirs, "none", mountpath).CombinedOutput(); err != nil {
+		log.Error(err)
 		return err
 	}
 	return nil

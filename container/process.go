@@ -67,7 +67,8 @@ func GetContainerProcess(info *ContainerInfo) (*exec.Cmd, *os.File) {
 		info.FilePath["logFolder"] = logDir
 		info.FilePath["logFile"] = logFilePath
 	}
-	NewWorkspace(ContainerMountRoot,info.ID,info.VolumePoints)
+	cwd := NewWorkspace(ContainerMountRoot,info.ID,info.VolumePoints)
+	cmd.Dir = cwd
 	return cmd, writePipe
 }
 
