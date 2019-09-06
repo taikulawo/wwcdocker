@@ -6,10 +6,10 @@ env:
   - GO111MODULE=on
 script:
   - go build .
-
-branches:
-  only:
-  - master
+  
+# build not trigger when I tag a commit, push it branch
+# remove branch.only
+# https://stackoverflow.com/questions/30156581/travis-ci-skipping-deployment-although-commit-is-tagged
 
 notifications:
   email:
