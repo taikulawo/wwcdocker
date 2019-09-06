@@ -12,7 +12,10 @@ import (
 func main() {
 	app := cli.NewApp()
 	app.Name = "wwcdocker"
-	app.Commands = []cli.Command{cmd.RunCommand}
+	app.Commands = []cli.Command{
+		cmd.RunCommand,
+		cmd.InitCommand,
+	}
 	app.Before = func(ctx *cli.Context) error {
 		log.SetReportCaller(false)
 		log.SetOutput(os.Stdout)
