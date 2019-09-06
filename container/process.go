@@ -81,7 +81,7 @@ func NewFilePipe() (*os.File, *os.File, error) {
 	return reader, writer, nil
 }
 
-func pivotRoot(rootfs string) error {
+func PivotRoot(rootfs string) error {
 	if err := syscall.Mount(rootfs, rootfs, "bind", syscall.MS_BIND|syscall.MS_REC, ""); err != nil {
 		log.Errorf("Mount %s to itself error, %v", rootfs, err)
 		return err
@@ -89,12 +89,12 @@ func pivotRoot(rootfs string) error {
 
 	putOld := path.Join(rootfs, ".pivotroot")
 	if err := os.Mkdir(putOld, 0777); err != nil {
-		log.Error("Failed to create putOld folder %s, error: %v", putOld, err)
+		log.Errorf("Failed to create putOld folder %s, error: %v", putOld, err)
 		return err
 	}
 
 	if err := syscall.PivotRoot(rootfs, putOld); err != nil {
-		log.Errorf("Failed to Pivot Rootfs %s, error: %v", rootfs, putOld)
+		log.Errorf("Failed to Pivot Rootfs %s, error: %v", rootfs, err)
 		return err
 	}
 
