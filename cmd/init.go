@@ -61,7 +61,7 @@ func setUpMount() error {
 	}
 	base := path.Dir(pwd)
 
-	if err := syscall.Mount("", base, "bind", syscall.MS_BIND|syscall.MS_REC|syscall.MS_PRIVATE, ""); err != nil {
+	if err := syscall.Mount(base, base, "bind", syscall.MS_BIND|syscall.MS_REC|syscall.MS_PRIVATE, ""); err != nil {
 		log.Error(err)
 		return err
 	}
