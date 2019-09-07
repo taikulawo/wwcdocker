@@ -22,6 +22,7 @@ func main() {
 	app.Before = func(ctx *cli.Context) error {
 		log.SetOutput(os.Stdout)
 		log.SetReportCaller(true)
+		log.SetLevel(log.DebugLevel)
 		formatter := &log.TextFormatter{
 			CallerPrettyfier: func(f *runtime.Frame) (string, string) {
 				filename := path.Base(f.File)

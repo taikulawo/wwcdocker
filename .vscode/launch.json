@@ -17,7 +17,7 @@
         "run",
         "-ti",
         "busybox",
-        "bash"
+        "sh"
       ],
       "useApiV1": false,
       "dlvLoadConfig": {

@@ -16,15 +16,16 @@ func GetRandomNumber() string {
 	return s.String()
 }
 
-func NameExists(path string) (bool, error) {
+func NameExists(path string) bool {
 	_, err := os.Stat(path)
 	if err == nil {
-		return true, nil
+		return true
 	}
 	if os.IsExist(err) {
-		return true, nil
+		return true
 	}
-	return false, err
+	log.Error(err)
+	return false
 }
 
 func ReadFromFd(fd uintptr) (string, error) {

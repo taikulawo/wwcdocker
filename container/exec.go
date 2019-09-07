@@ -2,7 +2,6 @@ package container
 
 import (
 	"encoding/json"
-	"fmt"
 	"os"
 	"os/exec"
 	"path"
@@ -12,17 +11,14 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-// Exec run special cmd, block until cmd exits
-func Exec(cmd string, args []string) error {
-	return	exec.Command(cmd,args...).Run()
-}
 
 // ExecProcess exec container process and run it
 func ExecProcess(process *exec.Cmd, info *ContainerInfo) error {
 	now := time.Now().Format("2019-09-03 16:36:05")
 	info.CreateTime = now
 	if err := process.Start(); err != nil {
-		return fmt.Errorf("Failed to Start Process, %v", err)
+		log.Errorf("Failed to Start Process, %v", err)
+		return err
 	}
 	pid := process.Process.Pid
 	info.Pid = pid
