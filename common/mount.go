@@ -24,10 +24,8 @@ func FindMountPoint() ([]string, error) {
 	default:
 		// TODO:
 		// replace fmt.Errorf by LogAndErrorf
-		fmt.Errorf("Unexpected type :T", tp)
-		return nil, nil
+		return nil, fmt.Errorf("Unexpected type: %T", tp)
 	}
-	return nil, nil
 }
 
 func parseMountInfo(info string) (result []string) {
