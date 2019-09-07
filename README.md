@@ -19,8 +19,21 @@
 
 **如果想尝试，请编译 master 分支，或者在 releases 下载最新稳定版本 😜**
 
+现在只支持 busybox 镜像，而 busybox 只配备了 `sh`，并没有 `bash`
 
-后续会逐渐添加新的功能
+由于 wwcdocker 并没有实现类似 `docker pull` 的机制
+所以全部的镜像都需要 `docker export` 来获得完整的 `rootfs`
+
+你可以在下面找到支持的镜像
+
+`https://github.com/iamwwc/imageshub`
+
+后续考虑实现 docker pull
+更多细节你可以在这里看到
+
+https://github.com/iamwwc/wwcdocker/issues/2
+
+后续会逐渐添加新的功能😀
 
 ### 开发工具
 
