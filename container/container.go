@@ -4,16 +4,7 @@ import (
 	"path"
 
 	sub "github.com/iamwwc/wwcdocker/cgroups/subsystems"
-)
-
-const (
-	// WwcdockerRoot is container root
-	WwcdockerRoot               = "/var/lib/wwcdocker/"
-	ContainerMountRoot          = WwcdockerRoot + "mnt"
-	ContainerWriteLayerRoot     = WwcdockerRoot + "writelayers"
-	ContainerReadLayerRoot      = WwcdockerRoot + "readlayers"
-	DefaultContainerLogLocation = WwcdockerRoot + "log"
-	DefaultContainerInfoDir     = WwcdockerRoot + "info"
+	"github.com/iamwwc/wwcdocker/common"
 )
 
 // ContainerInfo has all container information
@@ -34,5 +25,5 @@ type ContainerInfo struct {
 }
 
 func getCwdFromID(id string) string {
-	return path.Join(ContainerMountRoot, id)
+	return path.Join(common.ContainerMountRoot, id)
 }

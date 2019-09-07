@@ -36,3 +36,17 @@ func ReadFromFd(fd uintptr) (string, error) {
 	}
 	return string(b), nil
 }
+
+
+const (
+	quiet = "-q"
+	directory = "-P"
+	verbose = "-v"
+)
+
+// Use wget download images
+func DownloadFromUrl(url string, savedDir string) {
+	if _, err := Exec("wget",verbose,directory,savedDir); err != nil {
+		log.Error(err)
+	}
+}

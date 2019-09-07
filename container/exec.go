@@ -8,9 +8,9 @@ import (
 	"time"
 
 	"github.com/iamwwc/wwcdocker/cgroups"
+	"github.com/iamwwc/wwcdocker/common"
 	log "github.com/sirupsen/logrus"
 )
-
 
 // ExecProcess exec container process and run it
 func ExecProcess(process *exec.Cmd, info *ContainerInfo) error {
@@ -27,12 +27,12 @@ func ExecProcess(process *exec.Cmd, info *ContainerInfo) error {
 }
 
 func recordContainerInfo(info *ContainerInfo) error {
-	base := path.Dir(DefaultContainerInfoDir)
+	base := path.Dir(common.DefaultContainerInfoDir)
 	if err := os.MkdirAll(base, 0644); err != nil {
 		return err
 	}
 
-	name := path.Base(DefaultContainerInfoDir)
+	name := path.Base(common.DefaultContainerInfoDir)
 	infoFile, err := os.Create(name)
 
 	if err != nil {
@@ -48,6 +48,6 @@ func recordContainerInfo(info *ContainerInfo) error {
 	if err != nil {
 		return err
 	}
-	log.Debugf("%d characters has been written to %s", n, path.Join(DefaultContainerInfoDir, name))
+	log.Debugf("%d characters has been written to %s", n, path.Join(common.DefaultContainerInfoDir, name))
 	return nil
 }

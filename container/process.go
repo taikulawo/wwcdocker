@@ -8,6 +8,7 @@ import (
 	"strings"
 	"syscall"
 
+	"github.com/iamwwc/wwcdocker/common"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -43,7 +44,7 @@ func GetContainerProcess(info *ContainerInfo) (*exec.Cmd, *os.File) {
 			syscall.CLONE_NEWIPC |
 			syscall.CLONE_NEWNET |
 			syscall.CLONE_NEWPID |
-			syscall.CLONE_NEWNS ,
+			syscall.CLONE_NEWNS,
 	}
 	cmd.Env = info.Env
 	cmd.ExtraFiles = []*os.File{readPipe}
@@ -52,7 +53,7 @@ func GetContainerProcess(info *ContainerInfo) (*exec.Cmd, *os.File) {
 		cmd.Stdout = os.Stdout
 		cmd.Stderr = os.Stderr
 	} else {
-		logDir := path.Join(DefaultContainerLogLocation, info.ID)
+		logDir := path.Join(common.DefaultContainerLogLocation, info.ID)
 		// x 1
 		// w 2
 		// r 4
@@ -70,7 +71,7 @@ func GetContainerProcess(info *ContainerInfo) (*exec.Cmd, *os.File) {
 		info.FilePath["logFolder"] = logDir
 		info.FilePath["logFile"] = logFilePath
 	}
-	cwd := NewWorkspace(ContainerMountRoot,info.ID,info.VolumePoints)
+	cwd := NewWorkspace(common.ContainerMountRoot, info.ID, info.VolumePoints)
 	cmd.Dir = cwd
 	return cmd, writePipe
 }

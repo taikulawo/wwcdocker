@@ -7,7 +7,6 @@ import (
 	"syscall"
 
 	"github.com/iamwwc/wwcdocker/common"
-	"github.com/iamwwc/wwcdocker/container"
 	log "github.com/sirupsen/logrus"
 	"github.com/urfave/cli"
 )
@@ -47,7 +46,7 @@ func removeAllMounts() error {
 	}
 
 	// 删除 mnt/ 文件夹
-	root := container.ContainerMountRoot
+	root := common.ContainerMountRoot
 	if common.NameExists(root) {
 		return os.RemoveAll(root)
 	}
@@ -63,7 +62,7 @@ func removeAMountPoint(point string) error {
 }
 
 func removeAllReadLayers() error {
-	root := container.ContainerReadLayerRoot
+	root := common.ContainerReadLayerRoot
 	if !common.NameExists(root) {
 		log.Debugf("Root read layers don't exist. %s", root)
 		return nil
@@ -86,7 +85,7 @@ func removeAReadLayer(path string) error {
 }
 
 func removeAllWriteLayers() error {
-	return doRemove(container.ContainerWriteLayerRoot)
+	return doRemove(common.ContainerWriteLayerRoot)
 }
 
 func doRemove(n string) error {

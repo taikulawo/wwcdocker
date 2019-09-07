@@ -8,6 +8,7 @@ import (
 	"syscall"
 
 	log "github.com/sirupsen/logrus"
+	"github.com/iamwwc/wwcdocker/common"
 )
 
 /**
@@ -36,8 +37,8 @@ func MountVolume(parentPath, containerPath, id string) error {
 
 // NewWorkspace create new container working directory
 func NewWorkspace(root, containerID string, volumes map[string]string) string {
-	wlayerPath := path.Join(ContainerWriteLayerRoot, containerID)
-	rlayerPath := path.Join(ContainerReadLayerRoot, containerID)
+	wlayerPath := path.Join(common.ContainerWriteLayerRoot, containerID)
+	rlayerPath := path.Join(common.ContainerReadLayerRoot, containerID)
 	createNewWriteLayer(wlayerPath)
 	createNewReadLayer(rlayerPath,"")
 
@@ -66,20 +67,37 @@ func createNewWriteLayer(name string) error {
 	return nil
 }
 
+const (
+	imagesHub = "https://raw.githubusercontent.com/iamwwc/imageshub/master/"
+)
+
+func findImages(image string, target string) string {
+	imagePath := path.Join(common.WwcdockerRoot, "images")
+	if !common.NameExists(imagePath) {
+		common.Must(os.MkdirAll(imagePath,0644))
+	}
+	name := image + ".tar"
+	absolutePath := path.Join(imagePath,name)
+	if !common.NameExists(absolutePath) {
+		common.DownloadFromUrl(imagesHub + name, target)
+	}
+	return absolutePath
+}
+
 // createNewReadLayer create working folder from the given image.
 // root is container read layer folder
 // such as /var/lib/wwcdocker/readlayer/213kjassdqw/
 func createNewReadLayer(root, imageLayer string) error {
-	busyBoxTarURL := "/root/busybox.tar"
-
-	_, err := os.Stat(busyBoxTarURL)
+	log.Debugf("Image: %s",imageLayer)
+	tarURL := findImages(imageLayer,root)
+	_, err := os.Stat(tarURL)
 	if os.IsNotExist(err) {
-		return fmt.Errorf("busybox.tar don't exist in %s",busyBoxTarURL)
+		return fmt.Errorf("busybox.tar don't exist in %s",tarURL)
 	}
 	if err := os.MkdirAll(root,0644); err != nil {
 		return err
 	}
-	if _, err := exec.Command("tar","-xvf",busyBoxTarURL,"-C",root).CombinedOutput(); err != nil {
+	if _, err := exec.Command("tar","-xvf",tarURL,"-C",root).CombinedOutput(); err != nil {
 		return fmt.Errorf("untar error. %v", err)
 	}
 	return nil
@@ -99,8 +117,8 @@ func createMountPoint(mountpath, wlayerpath, rlayerpath string) error {
 
 // DeleteWorkSpace deletes write layer, unmounts mountpoint
 func DeleteWorkSpace(containerID string) {
-	deleteMountPoint(path.Join(ContainerMountRoot, containerID))
-	deleteWriteLayer(path.Join(ContainerWriteLayerRoot, containerID))
+	deleteMountPoint(path.Join(common.ContainerMountRoot, containerID))
+	deleteWriteLayer(path.Join(common.ContainerWriteLayerRoot, containerID))
 }
 
 func deleteMountPoint(mntpoint string) error {

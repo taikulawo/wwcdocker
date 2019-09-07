@@ -5,7 +5,6 @@ import (
 	"strings"
 	"syscall"
 
-	"github.com/iamwwc/wwcdocker/container"
 )
 
 var (
@@ -18,7 +17,7 @@ var (
 // FindMountPoint gets all wwcdocker mount point
 // like /var/run/wwcdocker/mnt/balabalabala
 func FindMountPoint() ([]string, error) {
-	v := Must2(Exec("mount", []string{}))
+	v := Must2(Exec("mount"))
 	switch tp := v.(type) {
 	case string:
 		return parseMountInfo(tp),nil
@@ -33,7 +32,7 @@ func FindMountPoint() ([]string, error) {
 
 func parseMountInfo(info string) (result []string) {
 	arrays := strings.Split(info, "\n")
-	root := container.WwcdockerRoot
+	root := WwcdockerRoot
 
 	for _, value := range arrays {
 		point := strings.Split(value, " ")[2]
