@@ -58,6 +58,9 @@ func setUpMount() error {
 		log.Errorf("Get current working directory error. %s", err)
 		return err
 	}
+
+	common.Exec("mount","--make-rprivate","/")
+	
 	if err := container.PivotRoot(pwd); err != nil {
 		log.Errorf("Error when call pivotRoot %v", err)
 		return err

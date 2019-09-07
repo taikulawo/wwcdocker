@@ -88,7 +88,7 @@ func NewFilePipe() (*os.File, *os.File, error) {
 func PivotRoot(rootfs string) error {
 	// 可算被我找到了
 	// https://github.com/torvalds/linux/blob/d41a3effbb53b1bcea41e328d16a4d046a508381/fs/namespace.c#L3582
-	if err := syscall.Mount(rootfs, rootfs, "bind", syscall.MS_BIND|syscall.MS_REC, ""); err != nil {
+	if err := syscall.Mount(rootfs, rootfs, "bind", syscall.MS_BIND|syscall.MS_REC | syscall.MS_PRIVATE, ""); err != nil {
 		log.Errorf("Mount %s to itself error, %v", rootfs, err)
 		return err
 	}
