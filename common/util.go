@@ -46,7 +46,7 @@ const (
 
 // Use wget download images
 func DownloadFromUrl(url string, savedDir string) {
-	if _, err := Exec("wget",verbose,directory,savedDir); err != nil {
+	if _, err := Exec("wget",verbose,directory,savedDir,url); err != nil {
 		log.Error(err)
 	}
 }

@@ -36,11 +36,11 @@ func MountVolume(parentPath, containerPath, id string) error {
 }
 
 // NewWorkspace create new container working directory
-func NewWorkspace(root, containerID string, volumes map[string]string) string {
+func NewWorkspace(root, containerID,imageName string, volumes map[string]string) string {
 	wlayerPath := path.Join(common.ContainerWriteLayerRoot, containerID)
 	rlayerPath := path.Join(common.ContainerReadLayerRoot, containerID)
 	createNewWriteLayer(wlayerPath)
-	createNewReadLayer(rlayerPath,"")
+	createNewReadLayer(rlayerPath,imageName)
 
 	mountpath := getCwdFromID(containerID)
 	// 将 write layer 与 read layer 组合挂载成aufs文件系统
@@ -71,15 +71,14 @@ const (
 	imagesHub = "https://raw.githubusercontent.com/iamwwc/imageshub/master/"
 )
 
-func findImages(image string, target string) string {
-	imagePath := path.Join(common.WwcdockerRoot, "images")
+func findImages(imagePath, image string) string {
 	if !common.NameExists(imagePath) {
 		common.Must(os.MkdirAll(imagePath,0644))
 	}
 	name := image + ".tar"
 	absolutePath := path.Join(imagePath,name)
 	if !common.NameExists(absolutePath) {
-		common.DownloadFromUrl(imagesHub + name, target)
+		common.DownloadFromUrl(imagesHub + name, imagePath)
 	}
 	return absolutePath
 }
@@ -89,7 +88,8 @@ func findImages(image string, target string) string {
 // such as /var/lib/wwcdocker/readlayer/213kjassdqw/
 func createNewReadLayer(root, imageLayer string) error {
 	log.Debugf("Image: %s",imageLayer)
-	tarURL := findImages(imageLayer,root)
+	imagePath := path.Join(common.WwcdockerRoot, "images")
+	tarURL := findImages(imagePath,imageLayer)
 	_, err := os.Stat(tarURL)
 	if os.IsNotExist(err) {
 		return fmt.Errorf("busybox.tar don't exist in %s",tarURL)
