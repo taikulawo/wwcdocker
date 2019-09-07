@@ -14,8 +14,6 @@ import (
 	"github.com/urfave/cli"
 )
 
-
-
 var InitCommand = cli.Command{
 	Name:  "__DON'T__CALL__wwcdocker__init__",
 	Usage: "Used in Container, User are forbidden to call this command",
@@ -33,20 +31,9 @@ var InitCommand = cli.Command{
 			log.Error(err)
 			return err
 		}
-		pwd, err := os.Getwd()
-		if err != nil {
-			log.Errorf("Get current working directory error. %s", err)
-			return err
-		}
-		if err := container.PivotRoot(pwd); err != nil {
-			log.Errorf("Error when call pivotRoot %v", err)
-			return err
-		}
-		defaultMountFlags := syscall.MS_NOEXEC | syscall.MS_NODEV | syscall.MS_NOSUID
-		if err := syscall.Mount("proc", "/proc", "proc", uintptr(defaultMountFlags), ""); err != nil {
-			return fmt.Errorf("Fail to mount /proc fs in container process. Error: %v", err)
-		}
-		syscall.Mount("tmpfs", "/dev", "tmpfs", syscall.MS_NOSUID|syscall.MS_STRICTATIME, "mode=755")
+
+		setUpMount()
+
 		cmdArrays := strings.Split(b, " ")
 		absolutePath, err := exec.LookPath(cmdArrays[0])
 		args := cmdArrays[1:]
@@ -63,4 +50,34 @@ var InitCommand = cli.Command{
 	},
 	Hidden:   true,
 	HideHelp: true,
+}
+
+func setUpMount() error {
+	pwd, err := os.Getwd()
+	if err != nil {
+		log.Errorf("Get current working directory error. %s", err)
+		return err
+	}
+	// base := path.Dir(pwd)
+
+	// syscall.Mount(base, base, "bind", syscall.MS_BIND | syscall.MS_REC, "")
+	// if err := syscall.Mount("", base, "", syscall.MS_PRIVATE, ""); err != nil {
+	// 	log.Error(err)
+	// 	return err
+	// }
+	
+	// common.Exec("mount","--make-rprivate","/")
+	
+	syscall.Mount("", "/", "", syscall.MS_PRIVATE|syscall.MS_REC, "")
+	if err := container.PivotRoot(pwd); err != nil {
+		log.Errorf("Error when call pivotRoot %v", err)
+		return err
+	}
+
+
+	defaultMountFlags := syscall.MS_NOEXEC | syscall.MS_NODEV | syscall.MS_NOSUID
+	if err := syscall.Mount("proc", "/proc", "proc", uintptr(defaultMountFlags), ""); err != nil {
+		return fmt.Errorf("Fail to mount /proc fs in container process. Error: %v", err)
+	}
+	return syscall.Mount("tmpfs", "/dev", "tmpfs", syscall.MS_NOSUID|syscall.MS_STRICTATIME, "mode=755")
 }
