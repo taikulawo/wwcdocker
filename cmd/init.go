@@ -59,14 +59,14 @@ func setUpMount() error {
 		log.Errorf("Get current working directory error. %s", err)
 		return err
 	}
-	base := path.Base(pwd)
+	base := path.Dir(pwd)
 
-	// common.Exec("mount","--make-rprivate","/")
 	if err := syscall.Mount("", base, "bind", syscall.MS_BIND|syscall.MS_REC|syscall.MS_PRIVATE, ""); err != nil {
 		log.Error(err)
 		return err
 	}
-
+	// common.Exec("mount","--make-rprivate","/")
+	
 	if err := container.PivotRoot(pwd); err != nil {
 		log.Errorf("Error when call pivotRoot %v", err)
 		return err
