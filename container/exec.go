@@ -44,10 +44,9 @@ func recordContainerInfo(info *ContainerInfo) error {
 		return err
 	}
 	content := string(i)
-	n, err := infoFile.WriteString(content)
+	_, err = infoFile.WriteString(content)
 	if err != nil {
 		return err
 	}
-	log.Debugf("%d characters has been written to %s", n, path.Join(common.DefaultContainerInfoDir, name))
 	return nil
 }
