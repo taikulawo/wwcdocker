@@ -59,20 +59,22 @@ func setUpMount() error {
 		log.Errorf("Get current working directory error. %s", err)
 		return err
 	}
-	base := path.Dir(pwd)
+	// base := path.Dir(pwd)
 
-	if err := syscall.Mount(base, base, "bind", syscall.MS_BIND|syscall.MS_REC|syscall.MS_PRIVATE, ""); err != nil {
-		log.Error(err)
-		return err
-	}
+	// syscall.Mount(base, base, "bind", syscall.MS_BIND | syscall.MS_REC, "")
+	// if err := syscall.Mount("", base, "", syscall.MS_PRIVATE, ""); err != nil {
+	// 	log.Error(err)
+	// 	return err
+	// }
+	
 	// common.Exec("mount","--make-rprivate","/")
 	
+	syscall.Mount("", "/", "", syscall.MS_PRIVATE|syscall.MS_REC, "")
 	if err := container.PivotRoot(pwd); err != nil {
 		log.Errorf("Error when call pivotRoot %v", err)
 		return err
 	}
 
-	syscall.Mount("", "/", "", syscall.MS_PRIVATE|syscall.MS_REC, "")
 
 	defaultMountFlags := syscall.MS_NOEXEC | syscall.MS_NODEV | syscall.MS_NOSUID
 	if err := syscall.Mount("proc", "/proc", "proc", uintptr(defaultMountFlags), ""); err != nil {
