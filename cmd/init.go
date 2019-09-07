@@ -36,12 +36,18 @@ var InitCommand = cli.Command{
 
 		cmdArrays := strings.Split(b, " ")
 		absolutePath, err := exec.LookPath(cmdArrays[0])
-		args := cmdArrays[1:]
+		args := cmdArrays[0:]
+		args[0] = absolutePath
 		log.Debugf("Found exec binary %s with cmd args %s", absolutePath, args)
 		if err != nil {
 			return fmt.Errorf("Fail to Lookup path %s. Error: %v", cmdArrays[0], err)
 		}
 		// env 在 容器里已经注入过了，这里 Environ 包含着 user 注入进来的 env
+		// Linux execve syscall 文档上规定：http://man7.org/linux/man-pages/man2/execve.2.html
+		// argv is an array of argument strings passed to the new program.  By
+		// convention, the first of these strings (i.e., argv[0]) should contain
+		// the filename associated with the file being executed.
+		// args 虽然名为参数，但 args[0] 应该是需要执行的 cmd 
 		if err := syscall.Exec(absolutePath, args, os.Environ()); err != nil {
 			log.Error(err)
 			return fmt.Errorf("Fail to Exec process in container. Error: %v", err)
