@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"path"
 	"strings"
 	"syscall"
 
@@ -58,15 +59,20 @@ func setUpMount() error {
 		log.Errorf("Get current working directory error. %s", err)
 		return err
 	}
+	base := path.Base(pwd)
 
-	common.Exec("mount","--make-rprivate","/")
-	
+	// common.Exec("mount","--make-rprivate","/")
+	if err := syscall.Mount("", base, "bind", syscall.MS_BIND|syscall.MS_REC|syscall.MS_PRIVATE, ""); err != nil {
+		log.Error(err)
+		return err
+	}
+
 	if err := container.PivotRoot(pwd); err != nil {
 		log.Errorf("Error when call pivotRoot %v", err)
 		return err
 	}
 
-	syscall.Mount("", "/", "", syscall.MS_PRIVATE | syscall.MS_REC, "")
+	syscall.Mount("", "/", "", syscall.MS_PRIVATE|syscall.MS_REC, "")
 
 	defaultMountFlags := syscall.MS_NOEXEC | syscall.MS_NODEV | syscall.MS_NOSUID
 	if err := syscall.Mount("proc", "/proc", "proc", uintptr(defaultMountFlags), ""); err != nil {
