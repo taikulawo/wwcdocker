@@ -49,7 +49,7 @@ var InitCommand = cli.Command{
 		syscall.Mount("tmpfs", "/dev", "tmpfs", syscall.MS_NOSUID|syscall.MS_STRICTATIME, "mode=755")
 		cmdArrays := strings.Split(b, " ")
 		absolutePath, err := exec.LookPath(cmdArrays[0])
-		args := cmdArrays[0:]
+		args := cmdArrays[1:]
 		log.Debugf("Found exec binary %s with cmd args %s", absolutePath, args)
 		if err != nil {
 			return fmt.Errorf("Fail to Lookup path %s. Error: %v", cmdArrays[0], err)
