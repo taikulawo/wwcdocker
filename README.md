@@ -12,6 +12,12 @@
 ### 如何安装
 `source <(curl -s -L https://raw.githubusercontent.com/iamwwc/wwcdocker/master/install.sh)`
 
+然后运行如下命令试玩 :)
+
+```
+wwcdocker run -ti busybox sh
+```
+
 ### 开发
 默认在 `dev` 分支开发，开发完成，测试通过之后会发布至 `master` 分支，并构建 `release`
 
