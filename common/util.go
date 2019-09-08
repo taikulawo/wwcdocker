@@ -24,7 +24,6 @@ func NameExists(path string) bool {
 	if os.IsExist(err) {
 		return true
 	}
-	log.Error(err)
 	return false
 }
 
