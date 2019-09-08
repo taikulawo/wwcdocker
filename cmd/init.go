@@ -72,9 +72,9 @@ func setUpMount() error {
 	// 	return err
 	// }
 	
-	// common.Exec("mount","--make-rprivate","/")
+	common.Exec("mount","--make-rprivate","/")
 	
-	syscall.Mount("", "/", "", syscall.MS_PRIVATE|syscall.MS_REC, "")
+	// syscall.Mount("", "/", "", syscall.MS_PRIVATE|syscall.MS_REC, "")
 	if err := container.PivotRoot(pwd); err != nil {
 		log.Errorf("Error when call pivotRoot %v", err)
 		return err
