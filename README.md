@@ -28,13 +28,17 @@ wwcdocker run -ti busybox sh
 
 ### Development
 
-We develop project in dev branch. After the test done, we will merge it to master ( which means stable verison), and deploy a release according to git tag
+We develop project in dev branch. After the test done, we will merge it to master ( which means stable verison ), and deploy a release according to git tag
 
 **Dev branches are not guaranteed to be compiled**
 
-**If you want give a try, please build master branch by your own, or download latest stable version from `releases`**
+**If you want give a try, please build master branch by your own, or download latest stable version from `releases` 😜**
 
-From now, we only support `busybox` image ( which has `sh` installed by default).
+For now, we only support `busybox` image ( which has `sh` installed by default ).
+
+You can find all images we currently supported.
+
+https://github.com/iamwwc/imageshub
 
 So
 
@@ -52,7 +56,7 @@ You can find more related discussion from here
 
 https://github.com/iamwwc/wwcdocker/issues/2
 
-New features will come in future😀
+New features will come in future 😀
 
 Keep a eye on it!
 
