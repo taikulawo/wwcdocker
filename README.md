@@ -10,7 +10,7 @@
 - aufs作为底层文件系统与镜像的实现
 
 ### 如何安装
-`bash <(curl -s https://raw.githubusercontent.com/iamwwc/wwcdocker/master/install.sh)`
+`source <(curl -s -L https://raw.githubusercontent.com/iamwwc/wwcdocker/master/install.sh)`
 
 ### 开发
 默认在 `dev` 分支开发，开发完成，测试通过之后会发布至 `master` 分支，并构建 `release`
