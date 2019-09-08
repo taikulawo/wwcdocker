@@ -3,7 +3,7 @@
 [![Build Status](https://travis-ci.com/iamwwc/wwcdocker.svg?branch=master)](https://travis-ci.com/iamwwc/wwcdocker)
 
 <p align="center">
-  <img src="images/logo.jpg" align="center" alt="logo" width="150" height="150" style="border-radius:50%;">
+  <img src="images/logo.jpg" align="center" alt="logo" width="300" height="300" style="border-radius:50%;">
 </p>
 
 ## [中文版本](./README-zh-CN.md)
