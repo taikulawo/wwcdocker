@@ -1,54 +1,67 @@
-### Docker Impl
-
+# WWCDocker
 
 [![Build Status](https://travis-ci.com/iamwwc/wwcdocker.svg?branch=master)](https://travis-ci.com/iamwwc/wwcdocker)
 
-这是一个简易的Docker实现
+<p align="center">
+  <img src="images/logo.jpg" align="center" alt="logo" width="150" height="150" style="border-radius:50%;">
+</p>
 
-- namespace进行资源隔离
-- cgroup 资源限制
-- aufs作为底层文件系统与镜像的实现
+## [中文版本](./README-zh-CN.md)
 
-### 如何安装
+A simple docker implemention
+
+- namespace for resource isolation
+- cgroup for resource limit
+- aufs for file sytem
+
+### How to install?
+
 `source <(curl -s -L https://raw.githubusercontent.com/iamwwc/wwcdocker/master/install.sh)`
 
-然后运行如下命令试玩 :)
+After installation
+
+Try following for fun!
 
 ```
 wwcdocker run -ti busybox sh
 ```
 
-### 开发
-默认在 `dev` 分支开发，开发完成，测试通过之后会发布至 `master` 分支，并构建 `release`
+### Development
 
-**dev 分支不保证能通过 go build**
+We develop project in dev branch. After the test done, we will merge it to master ( which means stable verison), and deploy a release according to git tag
 
-**如果想尝试，请编译 master 分支，或者在 releases 下载最新稳定版本 😜**
+**Dev branches are not guaranteed to be compiled**
 
-现在只支持 busybox 镜像，而 busybox 只配备了 `sh`，并没有 `bash`
+**If you want give a try, please build master branch by your own, or download latest stable version from `releases`**
 
-由于 wwcdocker 并没有实现类似 `docker pull` 的机制
-所以全部的镜像都需要 `docker export` 来获得完整的 `rootfs`
+From now, we only support `busybox` image ( which has `sh` installed by default).
 
-你可以在下面找到支持的镜像
+So
 
-`https://github.com/iamwwc/imageshub`
+```
+wwcdocker run -ti ubuntu bash
+```
 
-后续考虑实现 docker pull
-更多细节你可以在这里看到
+maybe not working.
+
+`wwcdocker` don't implement `docker pull` mechanism. All images need to use `docker export` to export complete `rootfs` by hand.
+
+We will take it into account.
+
+You can find more related discussion from here
 
 https://github.com/iamwwc/wwcdocker/issues/2
 
-后续会逐渐添加新的功能😀
+New features will come in future😀
 
-### 开发工具
+Keep a eye on it!
 
-1. VSCode Remote Development -SSH
+### Development Tools
+
+1. Vscode Remote Development - SSH
 2. VMWare
 
-宿主机是Windows，本地后台运行 `Ubuntu 18.04.2 LTS`
-
-SSH挂载目录远程开发
+My host is `Windows`, using VMware connect into VM with SSH which running in backgroud
 
 ### TODO
 
