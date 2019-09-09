@@ -12,6 +12,10 @@ func TestIntEquals(t *testing.T) {
 	b = 1
 	result := IsEquals(a, b)
 	t.Log(result)
+	s1 := "a"
+	s2 := "a"
+	result = IsEquals(s1, s2)
+	a = 1
 }
 
 func TestTypeIsEquals(t *testing.T) {
